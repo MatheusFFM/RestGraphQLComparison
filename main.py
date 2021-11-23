@@ -2,23 +2,63 @@ import requests
 import speedtest
 import sys
 
-headers = {"Authorization": "bearer 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"}
+
+headers = {"Authorization": "bearer git token"}
 request_repetitions = 10
 graphQL_queries = [
     """
     {
-      search(query:"stars:>100", type:REPOSITORY, first:100){
-         nodes {
-             ... on Repository {
-                 nameWithOwner
-                 url
-             }
-         }
+      search(query:"language:java, stars:>100", type:REPOSITORY, first:1) {
+      nodes {
+        ... on Repository {
+          nameWithOwner
+          url
+          stargazerCount
+        }
+       }
+      }
+    }
+    """,
+    """
+    {
+      search(query:"language:java, stars:>100", type:REPOSITORY, first:50) {
+      nodes {
+        ... on Repository {
+          nameWithOwner
+          url
+          stargazerCount
+          pullRequests{
+            totalCount
+          }
+        }
+       }
+      }
+    }
+    """,
+    """
+    {
+      search(query:"language:java, stars:>100", type:REPOSITORY, first:100) {
+      nodes {
+        ... on Repository {
+          nameWithOwner
+          url
+          forkCount
+          stargazerCount
+          watchers{
+            totalCount
+          }
+          pullRequests{
+            totalCount
+          }
+        }
+       }
       }
     }
     """
 ]
-rest_queries = []
+rest_queries = ["https://api.github.com/search/repositories?q=language:java+stars:%3E100&sort=stars&order=desc&page=1&per_page=25", 
+                "https://api.github.com/search/repositories?q=language:java+stars:%3E100&sort=stars&order=desc&page=1&per_page=50"
+                "https://api.github.com/search/repositories?q=language:java+stars:%3E100&sort=stars&order=desc&page=1&per_page=100"]
 
 
 def run_graphql_query(query):
@@ -29,7 +69,10 @@ def run_graphql_query(query):
 
 
 def run_rest_query(query):
-    request = 1  # requests.post('https://api.github.com/graphql', json={'query': query}, headers=headers)
+    request = requests.get(query)
+    print(f"Response content = {request.content}")
+    print(f"Response time = {request.elapsed.microseconds} microseconds")
+    print(f"Response size = {sys.getsizeof(request.content)} bytes")
 
 
 def make_speed_test():
@@ -50,6 +93,7 @@ def main():
     for query in rest_queries:
         for _ in range(request_repetitions):
             run_rest_query(query)
+
 
 
 if __name__ == '__main__':
