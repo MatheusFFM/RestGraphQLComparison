@@ -77,7 +77,7 @@ graphQL_queries = [
 rest_queries = [
     "https://api.github.com/search/repositories?q=language:java+stars:%3E100&sort=stars&order=desc&page=1&per_page=1",
     "https://api.github.com/search/repositories?q=language:java+stars:%3E100&sort=stars&order=desc&page=1&per_page=25",
-    "https://api.github.com/search/repositories?q=language:java+stars:%3E100&sort=stars&order=desc&page=1&per_page=50"
+    "https://api.github.com/search/repositories?q=language:java+stars:%3E100&sort=stars&order=desc&page=1&per_page=50",
     "https://api.github.com/search/repositories?q=language:java+stars:%3E100&sort=stars&order=desc&page=1&per_page=100"]
 
 
@@ -100,7 +100,7 @@ def make_speed_test():
         speed = speedtest.Speedtest()
         download = speed.download() / 1024 / 1024
         print(f"Speed test download {download} Mb/s")
-        valid_speed = 100 > download > 6
+        valid_speed = 195 > download > 155
         return valid_speed, download
     except Exception as e:
         return False, 0
